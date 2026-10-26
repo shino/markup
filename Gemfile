@@ -1,8 +1,14 @@
-source "http://rubygems.org"
-gem "redcarpet"
+source "https://rubygems.org"
+gemspec
+
+gem "redcarpet", :platforms => :ruby
+gem "kramdown", :platforms => :jruby
 gem "RedCloth"
-gem "rdoc", "~>3.6"
-gem "org-ruby"
-gem "creole", "~>0.3.6"
-gem "wikicloth", "=0.6.0"
-gem "rake"
+gem "commonmarker", ENV.fetch("COMMONMARKER_VERSION", "~> 2.8.2")
+gem "rdoc", ENV.fetch("RDOC_VERSION", "~> 7.2.0")
+gem "org-ruby", "0.9.12"
+gem "creole", "~>0.5.0"
+gem "wikicloth", "=0.8.3"
+gem "twitter-text", "~> 1.14"
+gem "asciidoctor", "~> 2.0.26"
+gem "rexml"

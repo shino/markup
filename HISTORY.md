@@ -1,3 +1,241 @@
+## 6.1.1 (unreleased)
+
+### Bug Fixes
+
+* I restored the CommonMarker 0.x API without requiring a parser upgrade. Existing 0.x installations retain their rendering flags, extension validation, and output behavior.
+* I retained CommonMarker 2.x support with its existing option behavior.
+* I added full-suite CI coverage for CommonMarker 0.23.12 alongside the default 2.8.2 dependency.
+
+The RDoc 8 and reStructuredText fixes listed below remain included.
+
+## 6.1.0 - 2026-10-16 (withdrawn)
+
+I withdrew this release because it required a CommonMarker upgrade for existing 0.x installations. The `v6.1.0` tag remains available for traceability.
+
+### Compatibility Changes
+
+* Require commonmarker 2.x when using the CommonMarker renderer; upgrade existing commonmarker 0.x installations [#2059](https://github.com/github/markup/pull/2059).
+* Accept `VALIDATE_UTF8`, `LIBERAL_HTML_TAG`, `TABLE_PREFER_STYLE_ATTRIBUTES`, and `STRIKETHROUGH_DOUBLE_TILDE` without applying them [#2059](https://github.com/github/markup/pull/2059).
+* Preserve soft line breaks with `NOBREAKS` instead of converting them to spaces [#2059](https://github.com/github/markup/pull/2059).
+* Apply `HARDBREAKS` and `NOBREAKS` in their supplied order; the last flag wins, replacing the old `HARDBREAKS` precedence [#2059](https://github.com/github/markup/pull/2059).
+
+### Bug Fixes
+
+* Support RDoc 8 formatter initialization and declare `rdoc < 9` as a runtime dependency [#2109](https://github.com/github/markup/pull/2109), [#2104](https://github.com/github/markup/pull/2104).
+* Restore reStructuredText section and table-of-contents anchors with docutils 0.18 and later [#2081](https://github.com/github/markup/pull/2081), [#2087](https://github.com/github/markup/pull/2087).
+
+### Development
+
+* Update development dependencies to commonmarker 2.8.2, html-pipeline 3.2, minitest 6, and activesupport 8.1.
+* Require 100% measured line and branch coverage and load gem metadata without loading renderers [#2072](https://github.com/github/markup/pull/2072).
+
+## 7.0.0 - 2026-10-15 (withdrawn)
+
+I withdrew this release on 2026-10-16. The `v7.0.0` tag remains available for traceability.
+
+### Breaking
+
+* Require commonmarker 2.x when using the CommonMarker renderer; upgrade existing commonmarker 0.x installations [#2059](https://github.com/github/markup/pull/2059).
+* Accept `VALIDATE_UTF8`, `LIBERAL_HTML_TAG`, `TABLE_PREFER_STYLE_ATTRIBUTES`, and `STRIKETHROUGH_DOUBLE_TILDE` without applying them [#2059](https://github.com/github/markup/pull/2059).
+* Preserve soft line breaks with `NOBREAKS` instead of converting them to spaces [#2059](https://github.com/github/markup/pull/2059).
+* Apply `HARDBREAKS` and `NOBREAKS` in their supplied order; the last flag wins, replacing the old `HARDBREAKS` precedence [#2059](https://github.com/github/markup/pull/2059).
+
+### Bug Fixes
+
+* Support RDoc 8 formatter initialization and declare `rdoc < 9` as a runtime dependency [#2109](https://github.com/github/markup/pull/2109), [#2104](https://github.com/github/markup/pull/2104).
+* Restore reStructuredText section and table-of-contents anchors with docutils 0.18 and later [#2081](https://github.com/github/markup/pull/2081), [#2087](https://github.com/github/markup/pull/2087).
+
+### Development
+
+* Update development dependencies to commonmarker 2.8.2, html-pipeline 3.2, minitest 6, and activesupport 8.1.
+* Require 100% measured line and branch coverage and load gem metadata without loading renderers [#2072](https://github.com/github/markup/pull/2072).
+
+## 6.0.0 - 2026-05-04
+
+### Breaking
+
+* Drop support for Ruby < 3.3 (Ruby 3.1 EOL March 2025, Ruby 3.2 EOL March 2026)
+
+### Security
+
+* Use HTTPS for cpanminus download in CI to prevent MITM attacks [#2050](https://github.com/github/markup/pull/2050)
+* Bump nokogiri to >= 1.19.1 to fix GHSA-wx95-c6cv-8532
+* Harden CI pip install with `--require-hashes --no-deps` [#2048](https://github.com/github/markup/pull/2048)
+* Use HTTPS for RubyGems source URL in Gemfile [#1854](https://github.com/github/markup/pull/1854)
+* Add explicit `contents: read` permissions to CI workflow [#1855](https://github.com/github/markup/pull/1855)
+* Bump rexml from 3.3.0 to 3.3.9 (multiple security fixes)
+
+### Bug Fixes
+
+* Fix RST section ID rendering to iterate all anchors instead of only the first [040f91d](https://github.com/github/markup/commit/040f91d)
+
+### Documentation
+
+* Fix spelling errors in codebase [#1479](https://github.com/github/markup/pull/1479)
+* Fix broken Textile language link in README [#1703](https://github.com/github/markup/pull/1703)
+
+### Infrastructure
+
+* Remove legacy Dockerfile and .dockerignore (Ubuntu Trusty, non-functional) [#2048](https://github.com/github/markup/pull/2048)
+* Update CI test matrix: drop Ruby 3.2, add Ruby 4.0 (now testing 3.3, 3.4, 4.0)
+* Bump nokogiri to 1.19.2, activesupport to 7.2.3.1
+* Bump github-linguist from 7.30.0 to 9.1.0, then to 9.3.0
+* Pin all GitHub Actions to commit SHAs for supply chain hardening
+* Add Dependabot configuration for automated dependency updates
+* Various Dependabot bumps for CI actions (ruby/setup-ruby, actions/checkout, actions/cache, actions/setup-python, actions/stale)
+
+## 5.0.1 - 2024-06-17
+* Bump activesupport from 4.0 to 7.1.3.4
+
+## 5.0.0 - 2024-06-17
+* Drop support for Ruby versions < 3
+* Bump nokogiri from 1.8.1 to 1.16.5
+* Bump nokogiri-diff from 0.2.0 to 0.3.0
+* Bump rdoc from 3.6 to 6.7.0
+* Update CommandImplementation to better support large files (affecting RST and POD6 rendering)
+
+## 4.0.2 - 2023-10-10
+* Add support for .mdx files in markdown
+
+## 4.0.1 - 2022-03-07
+* Update to commonmarker 0.18.3; There isn't a version on RubyGems for this, so this is pointing to a [tag version on GitHub](https://github.com/gjtorikian/commonmarker/blob/v0.18.3/commonmarker.gemspec)
+
+## 4.0.0 - 2021-03-31
+
+* Drop support for Python 2 in RST rendering [#1456](https://github.com/github/markup/pull/1456)
+
+## 3.0.5 - 2020-11-12
+
+* Add commonmarker_exts to commonmarker options [#1268](https://github.com/github/markup/pull/1268)
+* Check whether filename is set when rendering Asciidoc. [#1290](https://github.com/github/markup/pull/1290)
+
+## 3.0.4 - 2019-04-03
+
+* Expose options in #render_s [#1249](https://github.com/github/markup/pull/1249)
+* Upgrade to Asciidoctor 2.0.x [#1264](https://github.com/github/markup/pull/1264)
+
+## 3.0.3 - 2018-12-17
+
+* Temporarily remove support for POD6 [#1248](https://github.com/github/markup/pull/1248)
+
+## 3.0.2 - 2018-12-12
+
+* Add support for POD6 [#1173](https://github.com/github/markup/pull/1173)
+
+## 3.0.1 - 2018-10-19
+
+* Remove linguist-detected RMarkdown files from the Markdown renderer [#1237](https://github.com/github/markup/pull/1237)
+
+## 3.0.0 - 2018-10-18
+
+* Allow passing options through to CommonMarker [#1236](https://github.com/github/markup/pull/1236)
+* Symlink option is now a keyword arg [#1236](https://github.com/github/markup/pull/1236)
+
+## 2.0.2 - 2018-10-15
+
+* Don't render rmd files as Markdown [#1235](https://github.com/github/markup/pull/1235)
+
+## 2.0.1 - 2018-06-29
+
+* Create anchor for every =item directive in POD files [#1165](https://github.com/github/markup/pull/1165)
+
+## 2.0.0 - 2018-01-31
+
+* Remove filesystem access [#1157](https://github.com/github/markup/pull/1157)
+
+## 1.7.0 - 2018-01-30
+
+### Changed
+
+* Updates for Linguist v6 [#1139](https://github.com/github/markup/pull/1139)
+* Update to Nokogiri ~> 1.8; drop support for Ruby 2.0 [#1156](https://github.com/github/markup/pull/1156)
+
+## 1.6.2 - 2017-11-27
+
+### Changed
+
+* Only report basename in usage [#1131](https://github.com/github/markup/pull/1131)
+* rest2html parameter signature fix [#1082](https://github.com/github/markup/pull/1082)
+
+## 1.6.1 - 2017-07-25
+
+### Changed
+
+* Added support for highlight directive in rST [#925](https://github.com/github/markup/pull/925)
+* Fixes to documentation and code style [#1009](https://github.com/github/markup/pull/1009) [#1071](https://github.com/github/markup/pull/1071) [#1087](https://github.com/github/markup/pull/1087)
+* Test against newer Ruby versions [#1086](https://github.com/github/markup/pull/1086)
+* Upgrade to Asciidoctor 1.5.6.1 [#1088](https://github.com/github/markup/pull/1088)
+
+## 1.6.0 - 2017-04-03
+
+### Changed
+
+* Added filename argument to all renderers for additional context
+* Removed superfluous `rinku` dependency [#1035](https://github.com/github/markup/pull/1035)
+* Enable source-to-source navigation for `.adoc` AsciiDoc files, plus additional attributes passed through [#1039](https://github.com/github/markup/pull/1039) and [#1041](https://github.com/github/markup/pull/1041)
+
+## 1.5.0 - 2017-03-27
+
+### Added
+
+* Re-introduce [#537](https://github.com/github/markup/pull/537) to detect language of markup document
+  However `github-linguist` is optional and this gem will fallback to extensions for detection.
+
+[Full changelog](https://github.com/github/markup/compare/v1.4.9...v1.5.0)
+
+## 1.4.9 - 2017-03-27
+
+### Changed
+
+* Reverted [#537](https://github.com/github/markup/pull/537) to avoid extra dependencies
+
+[Full changelog](https://github.com/github/markup/compare/v1.4.8...v1.4.9)
+
+## 1.3.3 (2015-02-17)
+
+* Address a slight typo with `POSIX` [#456](https://github.com/github/markup/pull/456)
+
+[Full changelog](https://github.com/github/markup/compare/v1.3.2...v1.3.3)
+
+## 1.3.2 (2015-02-17)
+
+* RST: Output code instead of tt for inline literals [#370](https://github.com/github/markup/pull/370)
+* RST: Add IDs to headers so that `.. contents` works with `.. sectnum` [#391](https://github.com/github/markup/pull/391)
+
+[Full changelog](https://github.com/github/markup/compare/v1.3.1...v1.3.2)
+
+## 1.3.1 (2014-11-13)
+
+* Fix name error when trying to use newer versions of RedCarpet [#387](https://github.com/github/markup/pull/387)
+
+[Full changelog](https://github.com/github/markup/compare/v1.3.0...v1.3.1)
+
+## 1.3.0 (2014-09-11)
+
+* Extend the field limit for tables to 50 characters for RST [#306](https://github.com/github/markup/pull/306)
+* Add `.mkdn` as a supported markdown extension [#308](https://github.com/github/markup/pull/308)
+* Upgrade wikicloth to 0.8.1 [#317](https://github.com/github/markup/pull/317)
+* Force encoding of posix-spawn output [#338](https://github.com/github/markup/pull/338)
+* Add `.rmd` as a supported markdown extension [#343](https://github.com/github/markup/pull/343)
+
+[Full changelog](https://github.com/github/markup/compare/v1.2.1...v1.3.0)
+
+## 1.2.1 (2014-04-23)
+
+* Disable RST warnings [#290](https://github.com/github/markup/pull/290)
+
+[Full changelog](https://github.com/github/markup/compare/v1.2.0...v1.2.1)
+
+## 1.1.1 (2014-04-03)
+
+* Upgrade to org-ruby 0.9.1
+* Set default encoding to UTF-8 for Python 2
+
+## 1.1.0 (2014-03-10)
+
+* Raise GitHub::Markup::CommandError if external command exits with a non-zero status.
+* Remove support for literate Haskell (see #266)
+
 ## 0.5.1 (2010-09-30)
 
 * Support relative path links in rdoc

@@ -1,25 +1,36 @@
-$LOAD_PATH.unshift 'lib'
-require "github/markup/version"
+version_file = File.expand_path("../lib/github-markup.rb", __FILE__)
+version_match = File.read(version_file).match(/VERSION = ['"]([^'"]+)['"]/)
+raise "Could not find VERSION in #{version_file}" unless version_match
+version = version_match[1]
 
 Gem::Specification.new do |s|
-  s.name              = "github-markup"
-  s.version           = GitHub::Markup::Version
-  s.date              = Time.now.strftime('%Y-%m-%d')
-  s.summary           = "The code GitHub uses to render README.markup"
-  s.homepage          = "http://github.com/github/markup"
-  s.email             = "chris@ozmm.org"
-  s.authors           = [ "Chris Wanstrath" ]
-  s.has_rdoc          = false
+  s.name          = "github-markup"
+  s.version       = version
+  s.summary       = "The code GitHub uses to render README.markup"
+  s.description   = <<~DESC
+    This gem is used by GitHub to render any fancy markup such as Markdown,
+    Textile, Org-Mode, etc. Fork it and add your own!
+  DESC
+  s.authors       = ["Chris Wanstrath"]
+  s.email         = "chris@ozmm.org"
+  s.homepage      = "https://github.com/github/markup"
+  s.license       = "MIT"
 
-  s.files             = %w( README.md Rakefile LICENSE )
-  s.files            += Dir.glob("lib/**/*")
-  s.files            += Dir.glob("bin/**/*")
-  s.files            += Dir.glob("man/**/*")
-  s.files            += Dir.glob("test/**/*")
+  s.required_ruby_version = '>= 3.3.0'
 
-#  s.executables       = %w( github-markup )
-  s.description       = <<desc
-  This gem is used by GitHub to render any fancy markup such as
-  Markdown, Textile, Org-Mode, etc. Fork it and add your own!
-desc
+  s.files         = `git ls-files`.split($\)
+  s.executables   = s.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
+  s.test_files    = s.files.grep(%r{^(test|spec|features)/})
+  s.require_paths = %w[lib]
+
+  s.add_dependency 'rdoc', '< 9'
+
+  s.add_development_dependency 'rake', '~> 13'
+  s.add_development_dependency 'activesupport', '~> 8.1.3'
+  s.add_development_dependency 'minitest', '>= 5.4.3', '~> 6.0'
+  s.add_development_dependency 'html-pipeline', '~> 3.2'
+  s.add_development_dependency 'nokogiri', '~> 1.19.2'
+  s.add_development_dependency 'nokogiri-diff', '~> 0.3.0'
+  s.add_development_dependency "github-linguist", ">= 7.1.3"
+  s.add_development_dependency 'simplecov', '~> 0.22'
 end

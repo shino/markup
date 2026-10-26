@@ -1,86 +1,102 @@
 begin
-  require 'open3_detach'
+  require "linguist"
 rescue LoadError
-  require 'open3'
+  # Rely on extensions instead.
 end
 
+require "github/markup/command_implementation"
+require "github/markup/gem_implementation"
+
 module GitHub
+  module Markups
+    # all of supported markups:
+    MARKUP_ASCIIDOC = :asciidoc
+    MARKUP_CREOLE = :creole
+    MARKUP_MARKDOWN = :markdown
+    MARKUP_MEDIAWIKI = :mediawiki
+    MARKUP_ORG = :org
+    MARKUP_POD = :pod
+    MARKUP_RDOC = :rdoc
+    MARKUP_RST = :rst
+    MARKUP_TEXTILE = :textile
+    MARKUP_POD6 = :pod6
+  end
+
   module Markup
     extend self
+
     @@markups = {}
 
-    def render(filename, content = nil)
-      content ||= File.read(filename)
+    def markups
+      @@markups
+    end
 
-      if proc = renderer(filename)
-        proc[content]
+    def markup_impls
+      markups.values
+    end
+
+    def preload!
+      markup_impls.each(&:load)
+    end
+
+    def render(filename, content, symlink: false, options: {})
+      if (impl = renderer(filename, content, symlink: symlink))
+        impl.render(filename, content, options: options)
       else
         content
       end
     end
 
-    def markup(file, pattern, &block)
-      require file.to_s
-      add_markup(pattern, &block)
-    rescue LoadError
-      nil
+    def render_s(symbol, content, options: {})
+      raise ArgumentError, 'Can not render a nil.' if content.nil?
+
+      if markups.key?(symbol)
+        markups[symbol].render(nil, content, options: options)
+      else
+        content
+      end
     end
 
-    def command(command, regexp, &block)
-      command = command.to_s
+    def markup(symbol, gem_name, regexp, languages, opts = {}, &block)
+      impl = GemImplementation.new(regexp, languages, gem_name, &block)
+      markup_impl(symbol, impl)
+    end
 
-      if File.exists?(file = File.dirname(__FILE__) + "/commands/#{command}")
+    def markup_impl(symbol, impl)
+      if markups.key?(symbol)
+        raise ArgumentError, "The '#{symbol}' symbol is already defined."
+      end
+      markups[symbol] = impl
+    end
+
+    def command(symbol, command, regexp, languages, name, &block)
+      if File.exist?(file = File.dirname(__FILE__) + "/commands/#{command}")
         command = file
       end
 
-      add_markup(regexp) do |content|
-        rendered = execute(command, content)
-        rendered = rendered.to_s.empty? ? content : rendered
+      impl = CommandImplementation.new(regexp, languages, command, name, &block)
+      markup_impl(symbol, impl)
+    end
 
-        if block && block.arity == 2
-          # If the block takes two arguments, pass new content and old
-          # content.
-          block.call(rendered, content)
-        elsif block
-          # One argument is just the new content.
-          block.call(rendered)
-        else
-          # No block? No problem!
-          rendered
-        end
+    def can_render?(filename, content, symlink: false)
+      renderer(filename, content, symlink: symlink) != nil
+    end
+
+    def renderer(filename, content, symlink: false)
+      language = language(filename, content, symlink: symlink)
+      markup_impls.find do |impl|
+        impl.match?(filename, language)
       end
     end
 
-    def add_markup(regexp, &block)
-      @@markups[regexp] = block
-    end
+    def language(filename, content, symlink: false)
+      return unless defined?(::Linguist)
 
-    def can_render?(filename)
-      !!renderer(filename)
-    end
-
-    def renderer(filename)
-      @@markups.each do |key, value|
-        if Regexp.compile("\\.(#{key})$") =~ filename
-          return value
-        end
-      end
-      nil
-    end
-
-    def execute(command, target)
-      out = ''
-      Open3.popen3(command) do |stdin, stdout, _|
-        stdin.puts target
-        stdin.close
-        out = stdout.read
-      end
-      out.gsub("\r", '')
-    rescue Errno::EPIPE
-      ""
+      blob = Linguist::Blob.new(filename, content, symlink: symlink)
+      Linguist.detect(blob, allow_empty: true)
     end
 
     # Define markups
-    instance_eval File.read(File.dirname(__FILE__) + '/markups.rb')
+    require_relative 'markups'
   end
 end

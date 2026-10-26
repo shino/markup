@@ -1,121 +1,92 @@
 GitHub Markup
 =============
 
-We use this library on GitHub when rendering your README or any other
-rich text file.
+This library is the **first step** of a journey that every markup file in a repository goes on before it is rendered on GitHub.com:
+
+1. `github-markup` selects an _underlying library_ to convert the raw markup to HTML. See the list of [supported markup formats](#markups) below.
+1. The HTML is sanitized, aggressively removing things that could harm you and your kin—such as `script` tags, inline-styles, and `class` or `id` attributes.
+1. Syntax highlighting is performed on code blocks. See [github/linguist](https://github.com/github/linguist#syntax-highlighting) for more information about syntax highlighting.
+1. The HTML is passed through other filters that add special sauce, such as emoji, task lists, named anchors, CDN caching for images, and autolinking.
+1. The resulting HTML is rendered on GitHub.com.
+
+Please note that **only the first step** is covered by this gem — the rest happens on GitHub.com.  In particular, `markup` itself does no sanitization of the resulting HTML, as it expects that to be covered by whatever pipeline is consuming the HTML.
+
+Please see our [contributing guidelines](CONTRIBUTING.md) before reporting an issue.
 
 Markups
 -------
 
 The following markups are supported.  The dependencies listed are required if
-you wish to run the library.
+you wish to run the library. You can also run `script/bootstrap` to fetch them all.
 
-* [.markdown](http://daringfireball.net/projects/markdown/) -- `gem install redcarpet`
-* [.textile](http://www.textism.com/tools/textile/) -- `gem install RedCloth`
-* [.rdoc](http://rdoc.sourceforge.net/) -- `gem install rdoc -v 3.6.1`
-* [.org](http://orgmode.org/) -- `gem install org-ruby`
-* [.creole](http://wikicreole.org/) -- `gem install creole`
-* [.mediawiki](http://www.mediawiki.org/wiki/Help:Formatting) -- `gem install wikicloth`
-* [.rst](http://docutils.sourceforge.net/rst.html) -- `easy_install docutils`
-* [.asciidoc](http://www.methods.co.nz/asciidoc/) -- `brew install asciidoc`
-* [.pod](http://search.cpan.org/dist/perl/pod/perlpod.pod) -- `Pod::Simple::HTML`
+* [.markdown, .mdown, .mkdn, .md](http://daringfireball.net/projects/markdown/) -- `gem install commonmarker` (https://github.com/gjtorikian/commonmarker)
+* [.textile](https://textile-lang.com/) -- `gem install RedCloth` (https://github.com/jgarber/redcloth)
+* [.rdoc](https://ruby.github.io/rdoc/) -- `gem install rdoc`
+* [.org](http://orgmode.org/) -- `gem install org-ruby` (https://github.com/wallyqs/org-ruby)
+* [.creole](http://wikicreole.org/) -- `gem install creole` (https://github.com/larsch/creole)
+* [.mediawiki, .wiki](http://www.mediawiki.org/wiki/Help:Formatting) -- `gem install wikicloth` (https://github.com/nricciar/wikicloth)
+* [.rst](http://docutils.sourceforge.net/rst.html) -- `pip install docutils`
+* [.asciidoc, .adoc, .asc](http://asciidoc.org/) -- `gem install asciidoctor` (http://asciidoctor.org)
+* [.pod](http://search.cpan.org/dist/perl/pod/perlpod.pod) -- `Pod::Simple::XHTML`
   comes with Perl >= 5.10. Lower versions should install Pod::Simple from CPAN.
-* .1 - Requires [`groff`](http://www.gnu.org/software/groff/)
-
-
-Contributing
-------------
-
-Want to contribute? Great! There are two ways to add markups.
-
-
-### Commands
-
-If your markup is in a language other than Ruby, drop a translator
-script in `lib/github/commands` which accepts input on STDIN and
-returns HTML on STDOUT. See [rest2html][r2h] for an example.
-
-Once your script is in place, edit `lib/github/markups.rb` and tell
-GitHub Markup about it. Again we look to [rest2html][r2hc] for
-guidance:
-
-    command(:rest2html, /re?st(.txt)?/)
-
-Here we're telling GitHub Markup of the existence of a `rest2html`
-command which should be used for any file ending in `rest`,
-`rst`, `rest.txt` or `rst.txt`. Any regular expression will do.
-
-Finally add your tests. Create a `README.extension` in `test/markups`
-along with a `README.extension.html`. As you may imagine, the
-`README.extension` should be your known input and the
-`README.extension.html` should be the desired output.
-
-Now run the tests: `rake`
-
-If nothing complains, congratulations!
-
-
-### Classes
-
-If your markup can be translated using a Ruby library, that's
-great. Check out Check `lib/github/markups.rb` for some
-examples. Let's look at Markdown:
-
-    markup(:markdown, /md|mkdn?|markdown/) do |content|
-      Markdown.new(content).to_html
-    end
-
-We give the `markup` method three bits of information: the name of the
-file to `require`, a regular expression for extensions to match, and a
-block to run with unformatted markup which should return HTML.
-
-If you need to monkeypatch a RubyGem or something, check out the
-included RDoc example.
-
-Tests should be added in the same manner as described under the
-`Commands` section.
-
 
 Installation
 -----------
 
-    gem install github-markup
+```
+gem install github-markup
+```
 
+or
+
+```
+bundle install
+```
+
+from this directory.
 
 Usage
 -----
 
-    require 'github/markup'
-    GitHub::Markup.render('README.markdown', "* One\n* Two")
+Markdown rendering supports CommonMarker 0.x and 2.x. Keep the installed version to retain that parser's option behavior. Extensions follow the installed parser; 2.x-only extensions remain unavailable with 0.x.
 
-Or, more realistically:
+Basic form:
 
-    require 'github/markup'
-    GitHub::Markup.render(file, File.read(file))
+```ruby
+require 'github/markup'
 
+GitHub::Markup.render('README.markdown', "* One\n* Two")
+```
 
-Testing
--------
+More realistic form:
 
-To run the tests:
+```ruby
+require 'github/markup'
 
-    $ rake
+GitHub::Markup.render(file, File.read(file))
+```
 
-To add tests see the `Commands` section earlier in this
-README.
+And a convenience form:
 
+```ruby
+require 'github/markup'
+
+GitHub::Markup.render_s(GitHub::Markups::MARKUP_MARKDOWN, "* One\n* Two")
+```
+
+Local Development
+-----------------
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+cd script
+./bootstrap
+```
+
+Set `COMMONMARKER_VERSION` to override the development bundle's default `~> 2.8.2` requirement. See [Testing](CONTRIBUTING.md#testing) for parser version commands.
 
 Contributing
 ------------
 
-1. Fork it.
-2. Create a branch (`git checkout -b my_markup`)
-3. Commit your changes (`git commit -am "Added Snarkdown"`)
-4. Push to the branch (`git push origin my_markup`)
-5. Create an [Issue][1] with a link to your branch
-6. Enjoy a refreshing Diet Coke and wait
-
-
-[r2h]: http://github.com/github/markup/tree/master/lib/github/commands/rest2html
-[r2hc]: http://github.com/github/markup/tree/master/lib/github/markups.rb#L13
-[1]: http://github.com/github/markup/issues
+See [Contributing](CONTRIBUTING.md).
